@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Frieren Task Reminder ✦ To-Do List &amp; Pengingat</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#bfe0f8">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Frieren Tasks">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌸</text></svg>">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --sky:#a9d6f5; --sky2:#d7ecfb; --snow:#fbfdff; --lav:#d9ccf2; --lav2:#b9a6e6;
+  --gold:#e6c36a; --ink:#3b4066; --muted:#7a82a8; --red:#e5566d; --green:#4fb892;
+  --glass:rgba(255,255,255,.42); --glass-b:rgba(255,255,255,.75);
+  --shadow:0 8px 32px rgba(120,130,200,.22);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  font-family:'Quicksand',system-ui,sans-serif;color:var(--ink);min-height:100vh;
+  background:
+    radial-gradient(circle at 15% 10%,rgba(255,255,255,.9),transparent 40%),
+    radial-gradient(circle at 85% 80%,rgba(217,204,242,.8),transparent 45%),
+    linear-gradient(160deg,#bfe0f8 0%,#dfe8fb 45%,#e6dcf6 100%);
+  background-attachment:fixed;overflow-x:hidden;
+}
+.stars{position:fixed;inset:0;pointer-events:none;z-index:0}
+.stars i{position:absolute;width:6px;height:6px;background:var(--gold);border-radius:50%;
+  box-shadow:0 0 10px 2px rgba(230,195,106,.7);opacity:.0;animation:twinkle 4s infinite}
+@keyframes twinkle{0%,100%{opacity:0;transform:scale(.5)}50%{opacity:.9;transform:scale(1)}}
+.flower{position:fixed;z-index:0;pointer-events:none;filter:drop-shadow(0 6px 10px rgba(100,150,220,.25))}
+.f1{width:210px;left:-50px;bottom:-40px;transform:rotate(-12deg)}
+.f2{width:150px;right:-30px;top:90px;transform:rotate(20deg);animation:sway 7s ease-in-out infinite}
+.f3{width:110px;left:8%;bottom:14%;animation:sway 9s ease-in-out infinite reverse}
+.f4{width:130px;right:6%;bottom:-30px;transform:rotate(8deg)}
+@keyframes sway{0%,100%{transform:rotate(-6deg)}50%{transform:rotate(8deg) translateY(-8px)}}
+.wrap{position:relative;z-index:1;max-width:1100px;margin:0 auto;padding:20px 16px 40px}
+.glass{
+  background:var(--glass);backdrop-filter:blur(16px) saturate(140%);-webkit-backdrop-filter:blur(16px) saturate(140%);
+  border:1px solid var(--glass-b);border-radius:24px;box-shadow:var(--shadow);
+}
+header{padding:22px 26px;display:flex;align-items:center;gap:18px;flex-wrap:wrap;margin-bottom:20px;position:relative;overflow:hidden}
+header .nemo-h{position:absolute;right:-20px;top:-26px;width:130px;opacity:.9;animation:sway 8s ease-in-out infinite}
+.logo{width:76px;height:76px;flex:none;border-radius:50%;background:linear-gradient(145deg,#fff,var(--lav));
+  border:2px solid var(--gold);box-shadow:0 0 18px rgba(230,195,106,.6);overflow:hidden;display:grid;place-items:center}
+.logo img,.logo svg{width:100%;height:100%;object-fit:cover}
+h1{font-family:'Cinzel',serif;font-size:clamp(1.3rem,4.5vw,2.1rem);letter-spacing:.5px;
+  background:linear-gradient(90deg,#6c8fe0,#a98be0,#d9ad43);-webkit-background-clip:text;background-clip:text;color:transparent}
+.sub{color:var(--muted);font-size:.95rem;margin-top:2px}
+.party{display:flex;gap:8px;margin-top:10px}
+.party .av{width:38px;height:38px;border-radius:50%;border:2px solid #fff;background:#fff;overflow:hidden;box-shadow:0 3px 8px rgba(100,110,190,.25);transition:transform .25s}
+.party .av:hover{transform:translateY(-4px) scale(1.1)}
+.party .av img,.party .av svg{width:100%;height:100%;object-fit:cover}
+.stats{margin-left:auto;display:flex;gap:10px;flex-wrap:wrap;z-index:1}
+.stat{padding:8px 16px;text-align:center;border-radius:16px;background:rgba(255,255,255,.55);border:1px solid var(--glass-b)}
+.stat b{display:block;font-size:1.3rem;color:#6c7fd8}
+.stat span{font-size:.72rem;color:var(--muted);text-transform:uppercase;letter-spacing:.8px}
+.grid{display:grid;grid-template-columns:340px 1fr;gap:20px;align-items:start}
+@media(max-width:860px){.grid{grid-template-columns:1fr}.stats{margin-left:0}}
+.card{padding:22px}
+.card h2{font-family:'Cinzel',serif;font-size:1.1rem;margin-bottom:14px;display:flex;align-items:center;gap:8px}
+.card h2::before{content:"✦";color:var(--gold)}
+form{position:sticky;top:16px}
+label{display:block;font-size:.82rem;font-weight:700;margin:12px 0 5px;color:#5b628f}
+label small{font-weight:500;color:var(--muted)}
+input,select{
+  width:100%;padding:11px 14px;border-radius:14px;font:inherit;color:var(--ink);
+  background:rgba(255,255,255,.65);border:1.5px solid rgba(160,175,225,.45);outline:none;transition:.2s}
+input:focus,select:focus{border-color:var(--lav2);box-shadow:0 0 0 4px rgba(185,166,230,.28);background:#fff}
+.prio{display:flex;gap:8px}
+.prio input{display:none}
+.prio label{flex:1;margin:0;text-align:center;padding:9px 4px;border-radius:12px;cursor:pointer;font-size:.82rem;
+  background:rgba(255,255,255,.55);border:1.5px solid transparent;transition:.2s}
+.prio input:checked+label{border-color:currentColor;transform:translateY(-2px);box-shadow:0 4px 12px rgba(0,0,0,.08)}
+.p-Tinggi{color:#d8475f}.p-Sedang{color:#c9962b}.p-Rendah{color:#3fa883}
+.btn{border:none;cursor:pointer;font:inherit;font-weight:700;border-radius:14px;padding:12px 18px;transition:.2s;color:#fff;
+  background:linear-gradient(135deg,#7fa8ec,#a98be0);box-shadow:0 6px 16px rgba(130,140,220,.4)}
+.btn:hover{transform:translateY(-2px);box-shadow:0 10px 22px rgba(130,140,220,.5)}
+.btn:active{transform:scale(.97)}
+.btn.block{width:100%;margin-top:18px}
+.btn.ghost{background:rgba(255,255,255,.65);color:var(--ink);box-shadow:none;border:1px solid var(--glass-b)}
+.btn.sm{padding:7px 12px;font-size:.8rem;border-radius:11px}
+.toolbar{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px;align-items:center}
+.toolbar select{width:auto;flex:1;min-width:140px;padding:9px 12px}
+.list{display:flex;flex-direction:column;gap:12px}
+.task{padding:16px 18px;border-radius:20px;background:rgba(255,255,255,.58);border:1px solid var(--glass-b);
+  backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);box-shadow:0 4px 18px rgba(120,130,200,.15);
+  display:flex;gap:14px;align-items:flex-start;position:relative;overflow:hidden;animation:pop .45s cubic-bezier(.2,.9,.3,1.2)}
+.task::before{content:"";position:absolute;left:0;top:0;bottom:0;width:5px;background:var(--pc,var(--lav2))}
+.task.Tinggi{--pc:#ee7a8c}.task.Sedang{--pc:#e8c15e}.task.Rendah{--pc:#6fcaa8}
+.task:hover{transform:translateY(-2px);transition:.2s}
+@keyframes pop{from{opacity:0;transform:translateY(14px) scale(.96)}to{opacity:1;transform:none}}
+.task.leaving{animation:out .3s forwards}
+@keyframes out{to{opacity:0;transform:translateX(40px) scale(.9)}}
+.chk{flex:none;width:28px;height:28px;border-radius:50%;border:2px solid var(--lav2);background:#fff;cursor:pointer;
+  display:grid;place-items:center;transition:.25s;margin-top:2px;color:transparent;font-size:1rem}
+.chk:hover{box-shadow:0 0 0 5px rgba(185,166,230,.3)}
+.task.done .chk{background:linear-gradient(135deg,var(--green),#7fd9bd);border-color:var(--green);color:#fff;animation:ding .5s}
+@keyframes ding{0%{transform:scale(.6)}60%{transform:scale(1.3) rotate(10deg)}100%{transform:scale(1)}}
+.body{flex:1;min-width:0}
+.title{font-weight:700;font-size:1.05rem;word-break:break-word}
+.task.done .title{text-decoration:line-through;color:var(--muted)}
+.meta{display:flex;gap:6px 10px;flex-wrap:wrap;margin-top:6px;font-size:.8rem;color:var(--muted);align-items:center}
+.tag{padding:2px 10px;border-radius:99px;font-weight:700;font-size:.72rem;background:rgba(185,166,230,.28);color:#6b55b8}
+.tag.pr{background:#fff;border:1px solid currentColor}
+.count{display:inline-block;margin-top:8px;padding:5px 12px;border-radius:12px;font-weight:700;font-size:.85rem;
+  background:rgba(127,168,236,.2);color:#4d70c4}
+.count.soon{background:rgba(232,193,94,.28);color:#a67a14}
+.count.late{background:rgba(229,86,109,.18);color:var(--red);animation:pulse 2s infinite}
+.count.ok{background:rgba(79,184,146,.2);color:#2e8e6d}
+@keyframes pulse{50%{box-shadow:0 0 0 5px rgba(229,86,109,.15)}}
+.acts{display:flex;flex-direction:column;gap:6px}
+.acts button{width:34px;height:34px;border:none;border-radius:11px;cursor:pointer;background:rgba(255,255,255,.8);font-size:.95rem;transition:.2s}
+.acts button:hover{transform:scale(1.12);background:#fff}
+.count.none{background:rgba(185,166,230,.25);color:#7a62c0}
+.sw{display:flex;align-items:center;gap:10px;cursor:pointer;margin:14px 0 6px;font-weight:700}
+.sw input{width:18px;height:18px;accent-color:#a98be0;cursor:pointer}
+[hidden]{display:none!important}
+.empty{text-align:center;padding:40px 10px;color:var(--muted)}
+.empty svg{width:90px;margin-bottom:8px;opacity:.9}
+.quote{margin-top:20px;padding:20px 24px;display:flex;gap:16px;align-items:center;flex-wrap:wrap;position:relative;overflow:hidden}
+.quote .qav{width:64px;height:64px;flex:none;border-radius:50%;overflow:hidden;border:2px solid var(--gold);background:#fff;box-shadow:0 0 14px rgba(230,195,106,.6)}
+.quote .qav img,.quote .qav svg{width:100%;height:100%;object-fit:cover}
+.quote blockquote{flex:1;min-width:200px;font-style:italic;font-size:1.02rem;line-height:1.55;transition:opacity .35s}
+.quote cite{display:block;font-style:normal;font-size:.8rem;color:var(--muted);margin-top:4px}
+footer{text-align:center;color:var(--muted);font-size:.78rem;margin-top:18px}
+.toast{position:fixed;left:50%;bottom:24px;transform:translate(-50%,40px);opacity:0;z-index:9;padding:11px 20px;border-radius:99px;
+  background:rgba(255,255,255,.9);border:1px solid var(--gold);box-shadow:var(--shadow);font-weight:700;font-size:.9rem;transition:.35s;pointer-events:none}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+</style>
+</head>
+<body>
+
+<!-- Ornamen: Bunga Nemophila (SVG, tanpa file eksternal) -->
+<svg width="0" height="0" style="position:absolute">
+  <defs>
+    <radialGradient id="pg" cx="50%" cy="85%" r="90%"><stop offset="0" stop-color="#fff"/><stop offset=".35" stop-color="#d4ecff"/><stop offset="1" stop-color="#8fc3f0"/></radialGradient>
+    <symbol id="nemo" viewBox="-60 -60 120 120">
+      <g fill="url(#pg)" stroke="#86b9e8" stroke-width="1.2">
+        <ellipse cx="0" cy="-28" rx="19" ry="28"/>
+        <ellipse cx="0" cy="-28" rx="19" ry="28" transform="rotate(72)"/>
+        <ellipse cx="0" cy="-28" rx="19" ry="28" transform="rotate(144)"/>
+        <ellipse cx="0" cy="-28" rx="19" ry="28" transform="rotate(216)"/>
+        <ellipse cx="0" cy="-28" rx="19" ry="28" transform="rotate(288)"/>
+      </g>
+      <g stroke="#6aa6de" stroke-width=".8" opacity=".55" fill="none">
+        <path d="M0-8V-44M-6-10L-10-38M6-10L10-38"/><path d="M0-8V-44M-6-10L-10-38M6-10L10-38" transform="rotate(72)"/>
+        <path d="M0-8V-44M-6-10L-10-38M6-10L10-38" transform="rotate(144)"/><path d="M0-8V-44M-6-10L-10-38M6-10L10-38" transform="rotate(216)"/>
+        <path d="M0-8V-44M-6-10L-10-38M6-10L10-38" transform="rotate(288)"/>
+      </g>
+      <circle r="12" fill="#fff"/><circle r="12" fill="none" stroke="#c9e4fa"/>
+      <g fill="#3d4a7a"><circle cx="0" cy="-17" r="1.4"/><circle cx="16" cy="-5" r="1.4"/><circle cx="10" cy="14" r="1.4"/><circle cx="-10" cy="14" r="1.4"/><circle cx="-16" cy="-5" r="1.4"/></g>
+      <circle r="3.2" fill="#f2d98a"/>
+    </symbol>
+  </defs>
+</svg>
+<div class="stars" id="stars"></div>
+<svg class="flower f1"><use href="#nemo"/></svg>
+<svg class="flower f2"><use href="#nemo"/></svg>
+<svg class="flower f3"><use href="#nemo"/></svg>
+<svg class="flower f4"><use href="#nemo"/></svg>
+
+<div class="wrap">
+  <header class="glass">
+    <svg class="nemo-h"><use href="#nemo"/></svg>
+    <div class="logo" id="logoAv"></div>
+    <div>
+      <h1>Frieren Task Reminder</h1>
+      <p class="sub">Waktu elf itu panjang, tapi harimu tidak. Catat semua petualanganmu ✦ <small>(klik avatar untuk ganti foto)</small></p>
+      <div class="party" id="party"></div>
+    </div>
+    <div class="stats">
+      <div class="stat"><b id="sAll">0</b><span>Total</span></div>
+      <div class="stat"><b id="sAct">0</b><span>Aktif</span></div>
+      <div class="stat"><b id="sLate">0</b><span>Terlambat</span></div>
+    </div>
+  </header>
+
+  <div class="grid">
+    <form id="form" class="glass card" autocomplete="off">
+      <h2 id="formTitle">Tambah Tugas</h2>
+      <label for="name">Nama Tugas</label>
+      <input id="name" required maxlength="100" placeholder="cth: Kerjakan laporan / Beli sayur / Olahraga sore">
+      <label for="cat">Kategori</label>
+      <select id="cat"></select>
+      <div id="courseWrap">
+        <label for="course">Mata Kuliah <small>(opsional)</small></label>
+        <input id="course" maxlength="60" placeholder="cth: Jaringan Komputer">
+      </div>
+      <label class="sw"><input type="checkbox" id="useDl" checked> Pakai deadline</label>
+      <div id="dlWrap"><input id="deadline" type="datetime-local" required></div>
+      <label>Prioritas</label>
+      <div class="prio">
+        <input type="radio" name="prio" id="pT" value="Tinggi"><label for="pT" class="p-Tinggi">🔥 Tinggi</label>
+        <input type="radio" name="prio" id="pS" value="Sedang" checked><label for="pS" class="p-Sedang">⭐ Sedang</label>
+        <input type="radio" name="prio" id="pR" value="Rendah"><label for="pR" class="p-Rendah">🍃 Rendah</label>
+      </div>
+      <button class="btn block" id="submitBtn" type="submit">✦ Tambah Tugas</button>
+      <button class="btn ghost block" id="cancelBtn" type="button" hidden style="margin-top:8px">Batal Edit</button>
+      <button class="btn ghost block" id="notifBtn" type="button" style="margin-top:8px">🔔 Aktifkan Notifikasi</button>
+    </form>
+
+    <section class="glass card">
+      <h2>Daftar Tugas</h2>
+      <div class="toolbar">
+        <select id="catFilter" aria-label="Kategori"></select>
+        <select id="filter" aria-label="Filter">
+          <option value="all">Semua tugas</option>
+          <option value="active">Belum selesai</option>
+          <option value="done">Sudah selesai</option>
+        </select>
+        <select id="sort" aria-label="Urutkan">
+          <option value="deadline">Deadline terdekat</option>
+          <option value="priority">Prioritas tertinggi</option>
+          <option value="newest">Terbaru ditambahkan</option>
+        </select>
+        <button class="btn ghost sm" id="clearDone" type="button">🧹 Hapus yang selesai</button>
+      </div>
+      <div class="list" id="list"></div>
+    </section>
+  </div>
+
+  <div class="glass quote">
+    <div class="qav" id="quoteAv"></div>
+    <blockquote id="quoteText"></blockquote>
+    <button class="btn ghost sm" id="quoteBtn" type="button">✨ Quote lain</button>
+  </div>
+  <footer>Dibuat dengan ♥ untuk mahasiswa yang sedang berpetualang · Data tersimpan di browser kamu (Local Storage)</footer>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+/* ===== KONFIGURASI =====
+   Isi URL gambar karakter di bawah jika ingin memakai gambar sendiri.
+   Jika kosong, aplikasi memakai ilustrasi SVG bawaan (tidak akan pernah rusak). */
+const CHAR_IMAGES = { frieren:'img/frieren.jpeg', fern:'img/fern.jpeg', himmel:'img/himmel.jpeg', stark:'img/stark.jpeg' };
+let CUSTOM={}; try{CUSTOM=JSON.parse(localStorage.getItem('frieren_imgs'))||{}}catch(e){}
+
+const QUOTES = [
+  {t:'Perjalanan terbaik bukan soal cepat sampai, tapi siapa yang kamu temui dan apa yang kamu pelajari di sepanjang jalan.', c:'Frieren', a:'frieren'},
+  {t:'Kecil tapi konsisten: sihir terkuat lahir dari latihan yang dilakukan setiap hari.', c:'Fern', a:'fern'},
+  {t:'Jadilah orang yang menolong sebelum diminta. Itu yang membuat sebuah perjalanan terasa hangat.', c:'Himmel', a:'himmel'},
+  {t:'Takut itu wajar. Yang penting kamu tetap melangkah ke depan, meski gemetar.', c:'Stark', a:'stark'},
+  {t:'Seribu tahun pun terasa singkat kalau kamu menunda. Mulai kerjakan satu bagian kecil hari ini.', c:'Frieren', a:'frieren'},
+  {t:'Tidak ada sihir yang instan. Tugas besar selesai karena dipecah menjadi langkah-langkah kecil.', c:'Fern', a:'fern'},
+  {t:'Setelah semuanya selesai, kamu akan menyesal kalau tidak memanfaatkan waktu bersama orang-orang yang berarti. Istirahat juga penting.', c:'Himmel', a:'himmel'},
+  {t:'Belajar sedikit demi sedikit, lama-lama kamu akan sampai di tempat yang dulu terasa mustahil.', c:'Frieren', a:'frieren'}
+];
+
+/* ===== AVATAR (ilustrasi SVG sederhana) ===== */
+const AV = {
+  frieren:{hair:'#f4f1fb',line:'#cfc8e6',eye:'#58b98c',tails:true,ears:true,gold:true},
+  fern:{hair:'#4a3a78',line:'#2f2556',eye:'#8a6ad8',long:true},
+  himmel:{hair:'#5b9be0',line:'#3d78c0',eye:'#4a86d0',short:true},
+  stark:{hair:'#b4503a',line:'#8a3626',eye:'#7a4a2a',short:true}
+};
+function avatar(k){
+  const img=CUSTOM[k]||CHAR_IMAGES[k];
+  if(img) return `<img src="${img}" alt="${k}" onerror="this.outerHTML=avatarSvg('${k}')">`;
+  return avatarSvg(k);
+}
+function avatarSvg(k){
+  const o=AV[k];
+  return `<svg viewBox="0 0 64 64" role="img" aria-label="${k}">
+  <rect width="64" height="64" fill="#e4effc"/>
+  ${o.tails?`<ellipse cx="12" cy="38" rx="7" ry="17" fill="${o.hair}" stroke="${o.line}"/><ellipse cx="52" cy="38" rx="7" ry="17" fill="${o.hair}" stroke="${o.line}"/>`:''}
+  ${o.long?`<rect x="10" y="20" width="44" height="42" rx="18" fill="${o.hair}"/>`:''}
+  <circle cx="32" cy="30" r="19" fill="${o.hair}" stroke="${o.line}"/>
+  ${o.ears?`<path d="M13 31 L3 25 L14 38Z M51 31 L61 25 L50 38Z" fill="#ffe9d8" stroke="${o.line}"/>`:''}
+  <ellipse cx="32" cy="36" rx="14" ry="13" fill="#ffe9d8"/>
+  <path d="M17 29 Q22 15 32 15 Q43 15 47 29 Q40 21 32 24 Q24 21 17 29Z" fill="${o.hair}" stroke="${o.line}" stroke-width=".8"/>
+  <ellipse cx="26" cy="36" rx="2.6" ry="3.4" fill="${o.eye}"/><ellipse cx="38" cy="36" rx="2.6" ry="3.4" fill="${o.eye}"/>
+  <circle cx="26.8" cy="35" r=".9" fill="#fff"/><circle cx="38.8" cy="35" r=".9" fill="#fff"/>
+  <path d="M29 42 Q32 44.5 35 42" stroke="#c98a7a" fill="none" stroke-linecap="round"/>
+  ${o.gold?`<circle cx="32" cy="22" r="1.8" fill="#e6c36a"/>`:''}
+  </svg>`;
+}
+
+/* ===== STATE ===== */
+const KEY='frieren_todo_v1';
+let tasks=[]; try{tasks=JSON.parse(localStorage.getItem(KEY))||[]}catch(e){tasks=[]}
+tasks.forEach(t=>{if(!t.cat)t.cat=t.course?'Kuliah':'Lainnya';if(t.deadline==null)t.deadline=''}); // migrasi data lama
+let editId=null;
+const $=id=>document.getElementById(id);
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(tasks))}catch(e){}};
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const PW={Tinggi:0,Sedang:1,Rendah:2};
+const CATS=[{n:'Kuliah',e:'🎓'},{n:'Pekerjaan',e:'💼'},{n:'Rumah',e:'🏠'},{n:'Kesehatan',e:'🧘'},{n:'Belanja',e:'🛒'},{n:'Hobi',e:'🎨'},{n:'Sosial',e:'👥'},{n:'Lainnya',e:'💡'}];
+const catEmoji=n=>(CATS.find(c=>c.n===n)||{e:'💡'}).e;
+const cmp=(x,y)=>x===y?0:x<y?-1:1;
+const dlTime=t=>t.deadline?new Date(t.deadline).getTime():Infinity; // tanpa deadline = paling akhir
+
+function toast(m){const t=$('toast');t.textContent=m;t.classList.add('show');clearTimeout(toast.t);toast.t=setTimeout(()=>t.classList.remove('show'),2200)}
+
+/* ===== COUNTDOWN ===== */
+function countdown(task){
+  if(task.done) return {txt:'✔ Selesai',cls:'ok'};
+  if(!task.deadline) return {txt:'∞ Tanpa deadline',cls:'none'};
+  const diff=new Date(task.deadline)-Date.now(), abs=Math.abs(diff);
+  const d=Math.floor(abs/864e5), h=Math.floor(abs%864e5/36e5), m=Math.floor(abs%36e5/6e4);
+  const parts=d?`${d} hari ${h} jam`:h?`${h} jam ${m} menit`:`${m} menit`;
+  if(diff<0) return {txt:`⚠ Terlambat ${parts}`,cls:'late'};
+  return {txt:`⏳ Sisa: ${parts}`,cls:diff<864e5?'soon':''};
+}
+const fmt=iso=>new Date(iso).toLocaleString('id-ID',{weekday:'short',day:'numeric',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'});
+
+/* ===== RENDER ===== */
+function render(){
+  const f=$('filter').value, s=$('sort').value, cf=$('catFilter').value;
+  let list=tasks.filter(t=>(f==='all'||(f==='done')===t.done)&&(cf==='all'||t.cat===cf));
+  list.sort((a,b)=>{
+    if(s==='priority') return PW[a.prio]-PW[b.prio]||cmp(dlTime(a),dlTime(b));
+    if(s==='newest') return b.id-a.id;
+    return (a.done-b.done)||cmp(dlTime(a),dlTime(b));
+  });
+  $('list').innerHTML=list.length?list.map(t=>{
+    const c=countdown(t);
+    return `<article class="task ${t.prio} ${t.done?'done':''}" data-id="${t.id}">
+      <button class="chk" data-a="toggle" aria-label="Tandai selesai">✓</button>
+      <div class="body">
+        <div class="title">${esc(t.name)}</div>
+        <div class="meta"><span class="tag">${catEmoji(t.cat)} ${esc(t.cat)}</span>${t.course?`<span class="tag">📚 ${esc(t.course)}</span>`:''}
+          <span class="tag pr p-${t.prio}">${t.prio}</span>${t.deadline?`<span>📅 ${fmt(t.deadline)}</span>`:''}</div>
+        <span class="count ${c.cls}" data-cd>${c.txt}</span>
+      </div>
+      <div class="acts"><button data-a="edit" title="Edit">✏️</button><button data-a="del" title="Hapus">🗑️</button></div>
+    </article>`}).join('')
+  :`<div class="empty"><svg viewBox="-60 -60 120 120"><use href="#nemo"/></svg><p>Belum ada tugas di sini.<br>Waktunya bersantai, atau tambahkan petualangan baru ✦</p></div>`;
+  $('sAll').textContent=tasks.length;
+  $('sAct').textContent=tasks.filter(t=>!t.done).length;
+  $('sLate').textContent=tasks.filter(t=>!t.done&&t.deadline&&new Date(t.deadline)<Date.now()).length;
+}
+function tick(){ // update countdown tanpa re-render penuh
+  document.querySelectorAll('.task').forEach(el=>{
+    const t=tasks.find(x=>x.id==el.dataset.id); if(!t) return;
+    const c=countdown(t), n=el.querySelector('[data-cd]');
+    n.textContent=c.txt; n.className='count '+c.cls;
+  });
+  $('sLate').textContent=tasks.filter(t=>!t.done&&t.deadline&&new Date(t.deadline)<Date.now()).length;
+  checkNotif();
+}
+
+/* ===== FORM / CRUD ===== */
+function resetForm(){
+  editId=null;$('form').reset();$('pS').checked=true;defaultDl();syncForm();
+  $('formTitle').textContent='Tambah Tugas';$('submitBtn').textContent='✦ Tambah Tugas';$('cancelBtn').hidden=true;
+}
+$('form').addEventListener('submit',e=>{
+  e.preventDefault();
+  const cat=$('cat').value, useDl=$('useDl').checked;
+  const data={name:$('name').value.trim(),cat,course:cat==='Kuliah'?$('course').value.trim():'',
+    deadline:useDl?$('deadline').value:'',prio:document.querySelector('[name=prio]:checked').value};
+  if(!data.name||(useDl&&!data.deadline)) return;
+  if(editId){
+    Object.assign(tasks.find(t=>t.id===editId),data,{notified:false});toast('Tugas diperbarui ✦');
+  }else{
+    tasks.push({id:Date.now(),done:false,notified:false,...data});toast('Tugas ditambahkan ✦');
+  }
+  save();resetForm();render();
+});
+$('cancelBtn').onclick=resetForm;
+$('list').addEventListener('click',e=>{
+  const b=e.target.closest('[data-a]'); if(!b) return;
+  const el=b.closest('.task'), id=+el.dataset.id, t=tasks.find(x=>x.id===id);
+  if(b.dataset.a==='toggle'){
+    t.done=!t.done;save();
+    if(t.done) toast('Kerja bagus! Satu tugas selesai 🌸');
+    el.classList.toggle('done',t.done);
+    setTimeout(render,t.done&&$('filter').value!=='all'?350:450);
+  }
+  if(b.dataset.a==='del'){
+    if(!confirm('Hapus tugas ini?')) return;
+    el.classList.add('leaving');
+    setTimeout(()=>{tasks=tasks.filter(x=>x.id!==id);save();render()},300);
+  }
+  if(b.dataset.a==='edit'){
+    editId=id;$('name').value=t.name;$('cat').value=t.cat;$('course').value=t.course||'';$('useDl').checked=!!t.deadline;
+    if(t.deadline)$('deadline').value=t.deadline;else defaultDl();syncForm();
+    document.querySelector(`[name=prio][value=${t.prio}]`).checked=true;
+    $('formTitle').textContent='Edit Tugas';$('submitBtn').textContent='💾 Simpan Perubahan';$('cancelBtn').hidden=false;
+    $('form').scrollIntoView({behavior:'smooth',block:'center'});$('name').focus();
+  }
+});
+$('filter').onchange=$('sort').onchange=$('catFilter').onchange=render;
+$('cat').onchange=$('useDl').onchange=()=>syncForm();
+$('clearDone').onclick=()=>{
+  const n=tasks.filter(t=>t.done).length;
+  if(!n) return toast('Belum ada tugas selesai');
+  if(confirm(`Hapus ${n} tugas yang sudah selesai?`)){tasks=tasks.filter(t=>!t.done);save();render()}
+};
+
+/* ===== NOTIFIKASI PENGINGAT ===== */
+$('notifBtn').onclick=async()=>{
+  if(!('Notification' in window)) return toast('Browser tidak mendukung notifikasi');
+  const p=await Notification.requestPermission();
+  toast(p==='granted'?'Notifikasi aktif 🔔':'Notifikasi tidak diizinkan');updateNotifBtn();
+};
+function updateNotifBtn(){
+  if('Notification' in window&&Notification.permission==='granted'){$('notifBtn').textContent='🔔 Notifikasi Aktif';}
+}
+function checkNotif(){
+  if(!('Notification' in window)||Notification.permission!=='granted') return;
+  tasks.forEach(t=>{
+    if(!t.deadline) return;
+    const diff=new Date(t.deadline)-Date.now();
+    if(!t.done&&!t.notified&&diff>0&&diff<36e5){
+      t.notified=true;save();
+      const n=['⏳ Deadline sebentar lagi!',{body:`${t.name} — kurang dari 1 jam lagi`,icon:'icons/icon-192.png'}];
+      if(navigator.serviceWorker)navigator.serviceWorker.ready.then(r=>r.showNotification(...n)).catch(()=>new Notification(...n));else new Notification(...n);
+    }
+  });
+}
+
+/* ===== QUOTES ===== */
+let qi=-1;
+function newQuote(){
+  let i;do{i=Math.floor(Math.random()*QUOTES.length)}while(i===qi&&QUOTES.length>1);qi=i;
+  const q=QUOTES[i],bq=$('quoteText');bq.style.opacity=0;
+  setTimeout(()=>{bq.innerHTML=`“${q.t}”<cite>— terinspirasi dari ${q.c}, Sousou no Frieren</cite>`;
+    $('quoteAv').innerHTML=avatar(q.a);bq.style.opacity=1},250);
+}
+$('quoteBtn').onclick=newQuote;
+
+/* ===== INIT ===== */
+const picker=document.createElement('input');picker.type='file';picker.accept='image/*';let pickKey=null;
+picker.onchange=()=>{const f=picker.files[0];if(!f)return;const r=new FileReader();
+  r.onload=()=>{const im=new Image();im.onload=()=>{
+    const c=document.createElement('canvas'),k=Math.min(1,256/Math.min(im.width,im.height));
+    c.width=im.width*k;c.height=im.height*k;c.getContext('2d').drawImage(im,0,0,c.width,c.height);
+    CUSTOM[pickKey]=c.toDataURL('image/jpeg',.85);
+    try{localStorage.setItem('frieren_imgs',JSON.stringify(CUSTOM))}catch(e){toast('Gambar terlalu besar')}
+    paint();toast('Foto karakter diganti ✦')};im.src=r.result};
+  r.readAsDataURL(f);picker.value=''};
+function paint(){
+  $('logoAv').innerHTML=avatar('frieren');
+  $('party').innerHTML=['frieren','fern','himmel','stark'].map(k=>`<div class="av" data-k="${k}" title="Klik: ganti foto ${k} · Klik 2x: reset" style="cursor:pointer">${avatar(k)}</div>`).join('');
+  $('quoteAv').innerHTML=avatar(QUOTES[qi]?QUOTES[qi].a:'frieren');
+}
+$('party').addEventListener('click',e=>{const a=e.target.closest('.av');if(a){pickKey=a.dataset.k;picker.click()}});
+$('party').addEventListener('dblclick',e=>{const a=e.target.closest('.av');if(a){delete CUSTOM[a.dataset.k];try{localStorage.setItem('frieren_imgs',JSON.stringify(CUSTOM))}catch(x){}paint();toast('Foto direset')}});
+$('logoAv').style.cursor='pointer';$('logoAv').onclick=()=>{pickKey='frieren';picker.click()};
+paint();
+$('stars').innerHTML=Array.from({length:22},()=>`<i style="left:${Math.random()*100}%;top:${Math.random()*100}%;animation-delay:${Math.random()*4}s;animation-duration:${3+Math.random()*3}s"></i>`).join('');
+function defaultDl(){const d=new Date(Date.now()+864e5);d.setMinutes(d.getMinutes()-d.getTimezoneOffset());$('deadline').value=d.toISOString().slice(0,16)}
+function syncForm(){
+  $('courseWrap').hidden=$('cat').value!=='Kuliah';
+  $('dlWrap').hidden=!$('useDl').checked;
+  $('deadline').required=$('useDl').checked;
+}
+$('cat').innerHTML=CATS.map(c=>`<option value="${c.n}">${c.e} ${c.n}</option>`).join('');
+$('catFilter').innerHTML='<option value="all">Semua kategori</option>'+CATS.map(c=>`<option value="${c.n}">${c.e} ${c.n}</option>`).join('');
+defaultDl();syncForm();
+render();newQuote();updateNotifBtn();
+setInterval(tick,30000);
+if('serviceWorker' in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));
+</script>
+</body>
+</html>
